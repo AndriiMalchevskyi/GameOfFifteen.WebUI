@@ -3,6 +3,7 @@ import { State } from '../models/State';
 import { PlayerService } from '../services/player.service';
 import { SolveAction } from '../models/SolveAction';
 import { Direction } from '../models/Direction.enum';
+import { AlertifyService } from '../services/Alertify/Alertify.service';
 
 @Component({
   selector: 'app-player-desk',
@@ -15,8 +16,9 @@ state: number[][];
 shufflerCount = 1;
 solveInstructions: SolveAction[];
 delay = 1;
-readyToPlay = false; // 0-create game or nothing, 1 - have solveInstruction, 2-game was played
-constructor(private player: PlayerService) { }
+steps = 0;
+readyToPlay = false; // false - create game or nothing || game was played, true - have solveInstruction
+constructor(private player: PlayerService, private alertify: AlertifyService) { }
   ngOnInit() {
   }
 
@@ -24,6 +26,8 @@ constructor(private player: PlayerService) { }
     this.player.getShuffler(this.shufflerCount)
     .subscribe(res => {
       this.state = res;
+      this.alertify.success('Game was created');
+      this.steps = 0;
     });
     this.readyToPlay = false;
   }
@@ -31,12 +35,16 @@ constructor(private player: PlayerService) { }
 solveGame() {
   if (this.readyToPlay) {
     for (let step = 0; step < this.solveInstructions.length; step++ ) {
-      setTimeout(() => { this.solveGameByStep(step); }, (step * this.delay) * 1000);
+      setTimeout(() => {
+        this.solveGameByStep(step);
+        if (step + 1 === this.solveInstructions.length) {
+          this.alertify.success('Game is finished');
+        }
+      }, (step * this.delay) * 1000);
     }
     this.readyToPlay = false;
-    console.log('Game is finished');
   } else {
-    console.log('Create new game or fetch solve!');
+    this.alertify.error('Create new game or fetch solve!');
   }
 }
 
@@ -65,7 +73,8 @@ solveGameByStep(step: number) {
   const temp = this.state[index.i][index.j];
   this.state[index.i][index.j] = this.state[seconIndex.i][seconIndex.j];
   this.state[seconIndex.i][seconIndex.j] = temp;
-
+  this.alertify.success(this.getFormatStringOfStep(a));
+  --this.steps;
   }
 
 getSolutions() {
@@ -73,8 +82,32 @@ getSolutions() {
     .subscribe(res => {
       this.solveInstructions = res;
       this.readyToPlay = true;
-      console.log('Solver instructions was download');
+      this.steps = res.length;
+      this.alertify.success('Solver instructions was download');
     });
+}
+
+getFormatStringOfStep(step: SolveAction): string {
+  let str = step.number.toString();
+  switch (step.course) {
+    case Direction.Up: {
+      str += ' ↑';
+      break;
+    }
+    case Direction.Down: {
+      str += ' ↓';
+      break;
+    }
+    case Direction.Left: {
+      str += ' ←';
+      break;
+    }
+    case Direction.Right: {
+      str += ' →';
+      break;
+    }
+  }
+  return str;
 }
 
 sleep(milliseconds: number) {

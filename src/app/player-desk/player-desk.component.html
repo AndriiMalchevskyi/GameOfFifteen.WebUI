@@ -1,14 +1,23 @@
-<h1>
+<h1 class="text-center">
   Game of Fifteen
 </h1>
-<div  class="text-left">
-  <p>Count of shuffler: <input type="number" [(ngModel)]="shufflerCount"></p>
-  <p>Delay of step(sec): <input type="number" [(ngModel)]="delay"></p>
-  <input type="button" (click)="createGame()" value="Create Game">
-  <input type="button" (click)="getSolutions()" value="Fetch solutions">
-  <input type="button" (click)="solveGame(100)" value="Solve Game">
+<div  class="text-center m-2">
+
+  <label for="shufflerCount">Count of shuffler: </label>
+  <input type="number" id="shufflerCount" [(ngModel)]="shufflerCount"><br>
+  <label for="delay">Delay of step(sec): </label>
+  <input type="number" id="delay" [(ngModel)]="delay"><br>
+  <div class="m-2">
+    <input type="button" (click)="createGame()" value="Create Game">
+    <input type="button" (click)="getSolutions()" value="Fetch solutions">
+    <input type="button" (click)="solveGame(100)" value="Solve Game">
+  </div>
 </div>
-<div>
+<hr/>
+<div class="text-center m-2" *ngIf="steps>0">
+  <a>Steps:{{steps}}</a>
+</div>
+<div >
   <table>
       <tr *ngFor="let item of state">
         <td *ngFor="let a of item">{{a}} </td>

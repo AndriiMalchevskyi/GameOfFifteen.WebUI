@@ -14,7 +14,13 @@
  display: inline-block;
 }
 
+.m-2{
+    margin: 2px;
+}
+
 table {
+    margin-left: auto; 
+    margin-right: auto;
     background-color: rgb(163, 83, 36);
     font-size: 40px;
 }

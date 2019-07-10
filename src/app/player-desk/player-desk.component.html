@@ -14,13 +14,15 @@
   </div>
 </div>
 <hr/>
-<div class="text-center m-2" *ngIf="steps>0">
-  <a>Steps:{{steps}}</a>
-</div>
+
 <div >
   <table>
       <tr *ngFor="let item of state">
         <td *ngFor="let a of item">{{a}} </td>
       </tr>
   </table>
+</div>
+
+<div class="text-center m-2" *ngIf="steps>0">
+  <a>Steps:{{steps}}</a>
 </div>
